@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>		// pause()
 #include <bpf/libbpf.h>
 
 #define PROGRAM_NAME "test"
@@ -38,8 +39,8 @@ int main(int argc, char *argv[])
 		goto exit_failure;
 	}
 
-	while(1) {
-	}
+	pause();
+
 
 exit_failure:
 	bpf_link__destroy(link);
