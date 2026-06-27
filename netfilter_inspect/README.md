@@ -1,4 +1,8 @@
-# Generating the vmlinux.h file
-```
-bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
-```
+# Refactoring my kretprobe using BPF
+
+- https://github.com/susenguyen/netfilter_inspect
+
+## Requires
+- kernel sources
+- make headers_install
+- clang, llvm
