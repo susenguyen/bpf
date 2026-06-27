@@ -99,9 +99,9 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 
 
 	unsigned int verdict;
-	struct iphdr *iph;
-	struct tcphdr *tcph;
-	struct udphdr *udph;
+	struct iphdr *iph = NULL;
+	struct tcphdr *tcph = NULL;
+	struct udphdr *udph = NULL;
 	__u32 saddr, daddr;
 	__u16 src, dst;
 	unsigned int proto;
@@ -123,7 +123,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 	iph = ip_hdr(skb);
 	if (!iph) {
 		bpf_printk("%s: failed to find the iphdr structure", __func__);
-		return 1;
+		return 0;
 	}
 
 	saddr = bpf_ntohl(iph->saddr);
@@ -135,7 +135,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 
 			if (!tcph) {
 				bpf_printk("%s: failed to find the tcphdr structure", __func__);
-				return 1;
+				return 0;
 			}
 
 			proto = 0x000000ff & IPPROTO_TCP;
@@ -148,7 +148,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 
 			if (!udph) {
 				bpf_printk("%s: failed to find the udph structure", __func__);
-				return 1;
+				return 0;
 			}
 
 			proto = 0x000000ff & IPPROTO_UDP;
