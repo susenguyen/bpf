@@ -95,9 +95,6 @@ SEC("fexit/ipt_do_table")
 int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf_hook_state *state, unsigned int ret)
 {
 	struct xt_table *table = priv;
-
-
-
 	unsigned int verdict;
 	struct iphdr *iph = NULL;
 	struct tcphdr *tcph = NULL;
@@ -179,10 +176,6 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 					proto == IPPROTO_TCP ? "tcp" : "udp",
 					src, dst, verdict);
 
-
-
-
-	//bpf_printk("STEPH: skb @%p, state @%p, table @%p", skb, state, priv);
 	return 0;
 }
 
