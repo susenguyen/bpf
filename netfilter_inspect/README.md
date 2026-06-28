@@ -1,4 +1,4 @@
-# Refactoring my kretprobe using BPF
+# Refactoring my kretprobe using BPF fexit()
 
 - https://github.com/susenguyen/netfilter_inspect
 
@@ -8,6 +8,12 @@
 - clang, llvm
 - build /usr/src/linux/tools/lib/bpf (path for openSUSE)
 - bpftool
+
+## fexit() kretprobe
+fexit() provides certain advantages over kretprobes
+- faster
+- holds the parameters (instead of CPU registers) which means we don't need to store the kprobe (entry) registers in a global structure (simpler)
+- but requires BTF (and a "newer" kernel)
 
 ## Output
 

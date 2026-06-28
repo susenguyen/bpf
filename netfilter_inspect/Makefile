@@ -1,4 +1,4 @@
-TARGETS = kretprobe_ipt_do_table
+TARGETS = fexit_ipt_do_table
 
 all: $(TARGETS)
 .PHONY: all

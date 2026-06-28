@@ -91,6 +91,11 @@ struct xt_table_info {
  *
  */
 
+
+/*
+ * fexit()
+ *
+ */
 SEC("fexit/ipt_do_table")
 int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf_hook_state *state, unsigned int ret)
 {
