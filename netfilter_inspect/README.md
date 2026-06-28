@@ -6,6 +6,7 @@
 - kernel sources
 - make headers_install
 - clang, llvm
+- bpftool
 
 ## Output
 
