@@ -8,6 +8,7 @@
 - clang, llvm
 - build /usr/src/linux/tools/lib/bpf (path for openSUSE)
 - bpftool
+- [PROGRAM].bpf.o and [PROGRAM] must live in the same directory
 
 ## fexit() kretprobe
 fexit() provides certain advantages over kretprobes
