@@ -6,6 +6,7 @@
 - kernel sources
 - make headers_install
 - clang, llvm
+- build /usr/src/linux/tools/lib/bpf (path for openSUSE)
 - bpftool
 
 ## Output
