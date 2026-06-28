@@ -10,11 +10,13 @@
 - bpftool
 - [PROGRAM].bpf.o and [PROGRAM] must live in the same directory
 
-## fexit() kretprobe
+## fexit() vs kretprobe
 fexit() provides certain advantages over kretprobes
 - faster
 - holds the parameters (instead of CPU registers) which means we don't need to store the kprobe (entry) registers in a global structure (simpler)
 - but requires BTF (and a "newer" kernel)
+
+Also, both are equally dynamically instrumenting kernel functions which is not guaranteed to work with all kernel versions. In the case of ipt_do_table(), this function has be around for a veeeeery long time, so not overly worried it will change... Except for nft of course, but that will be the next challenge.
 
 ## Output
 
