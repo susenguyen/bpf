@@ -23,7 +23,7 @@ int view_trace_pipe(const char *trace_pipe)
 
 	memset(buf, 0, READ_BUFFER_SIZE);
 	for(;;) {
-		num = read(fd, buf, READ_BUFFER_SIZE);
+		num = read(fd, buf, READ_BUFFER_SIZE - 1);
 		if (num < 0) {
 			perror("ERROR: read()");
 			goto exit_failure;
