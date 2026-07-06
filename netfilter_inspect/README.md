@@ -23,9 +23,10 @@ Also, both are equally dynamically instrumenting kernel functions which is not g
 The output can be grabbed via dmesg and will look something like this
 
 ```  
-ipt_do_table(filter) - devin=(null)/0, devout=eth0/2, saddr=0xa010002, daddr=0xa010001, proto=6, spt=0xb986, dpt=0x1f90, verdict=0
+ipt_do_table(filter/hook_num) - devin=(null)/0, devout=eth0/2, saddr=0xa010002, daddr=0xa010001, proto=6, spt=0xb986, dpt=0x1f90, verdict=0
 ```
 
+- hoook_num: hook number as defined in the enum nf_inet_hooks in uapi/linux/netfilter.h
 - devin: ingress device
 - devout: egress device
 - saddr: source IP address in little-endian (hex)
