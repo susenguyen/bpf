@@ -158,6 +158,9 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 			dst = bpf_ntohs(udph->dest);
 
 			break;
+		/* 
+		 * add case IPPROTO_ICMP:
+		 */
 		default:
 			bpf_printk("[ipt_do_table_exit()]: unsupported L4 protocol; only TCP and UDP are supported");
 			return 0;
