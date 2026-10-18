@@ -154,8 +154,8 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 			}
 
 			proto = 0x000000ff & IPPROTO_UDP;
-			src = __bpf_ntohs(udph->source);
-			dst = __bpf_ntohs(udph->dest);
+			src = bpf_ntohs(udph->source);
+			dst = bpf_ntohs(udph->dest);
 
 			break;
 		default:
