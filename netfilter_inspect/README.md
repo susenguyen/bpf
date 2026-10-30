@@ -4,10 +4,9 @@
 
 ## Requires
 - kernel sources
-- make headers_install
 - clang, llvm
 - build /usr/src/linux/tools/lib/bpf (path for openSUSE)
-- bpftool
+- bpftool to build BTF
 - [PROGRAM].bpf.o and [PROGRAM] must live in the same directory
 
 ## fexit() vs kretprobe
