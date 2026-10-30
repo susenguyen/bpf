@@ -12,6 +12,9 @@
 
 #define NF_ACCEPT 1		/* From uapi/linux/netfilter.h		*/
 
+#define ICMP_ECHOREPLY	0	/* From uapi/linux/icmp.h		*/
+#define ICMP_ECHO	8
+
 /*
  * ip_hdr()
  *
@@ -27,7 +30,7 @@ static inline struct iphdr *ip_hdr(const struct sk_buff *skb)
 }
 
 /*
- * tcp_hdr() & udp_hdr()
+ * tcp_hdr(), udp_hdr() & icmp_hdr()
  *
  */
 static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
@@ -51,6 +54,10 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
 	return (struct udphdr *)skb_transport_header(skb);
 }
 
+static inline struct icmphdr *icmp_hdr(const struct sk_buff *skb)
+{
+        return (struct icmphdr *)skb_transport_header(skb);
+}
 
 /*
  * struct xt_table
@@ -104,6 +111,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 	struct iphdr *iph = NULL;
 	struct tcphdr *tcph = NULL;
 	struct udphdr *udph = NULL;
+	struct icmphdr *icmph = NULL;
 	__u32 saddr, daddr;
 	__u16 src, dst;
 	unsigned int proto;
@@ -158,11 +166,23 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 			dst = bpf_ntohs(udph->dest);
 
 			break;
-		/* 
-		 * add case IPPROTO_ICMP:
-		 */
+		case IPPROTO_ICMP:
+			icmph = icmp_hdr(skb);
+
+			if (!icmph) {
+				bpf_printk("%s: failed to find the icmph structure", __func__);
+				return 0;
+			}
+
+			if ((icmph->type == ICMP_ECHOREPLY) || (icmph->type == ICMP_ECHOREPLY)) {
+				proto = 0x000000ff & IPPROTO_ICMP;
+				src = 0;
+				dst = 0;
+			}
+
+			break;
 		default:
-			bpf_printk("[ipt_do_table_exit()]: unsupported L4 protocol; only TCP and UDP are supported");
+			bpf_printk("[ipt_do_table_exit()]: unsupported L4 protocol; only TCP, UDP and ICMP are supported");
 			return 0;
 	}
 
@@ -181,7 +201,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 	bpf_printk("ipt_do_table_exit()(%s/%d) - devin=%s/%d, devout=%s/%d, saddr=0x%x, daddr=0x%x, proto=%s, "
 		"spt=0x%x, dpt=0x%x, verdict=0x%x\n", table->name, state->hook, devin,
 					devidxin, devout, devidxout, saddr, daddr,
-					proto == IPPROTO_TCP ? "tcp" : "udp",
+					proto == IPPROTO_TCP ? "tcp" : (proto == IPPROTO_UDP ? "udp" : "icmp"),
 					src, dst, verdict);
 
 	return 0;
