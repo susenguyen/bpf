@@ -174,7 +174,7 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 				return 0;
 			}
 
-			if ((icmph->type == ICMP_ECHOREPLY) || (icmph->type == ICMP_ECHOREPLY)) {
+			if ((icmph->type == ICMP_ECHO) || (icmph->type == ICMP_ECHOREPLY)) {
 				proto = 0x000000ff & IPPROTO_ICMP;
 				src = 0;
 				dst = 0;
