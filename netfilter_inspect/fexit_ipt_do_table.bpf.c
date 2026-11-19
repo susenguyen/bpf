@@ -2,6 +2,7 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_endian.h>	/* For bpf_ntohs() and bpf_ntohl	*/
+#include <bpf/bpf_core_read.h>	/* For BPF_CORE_READ()			*/
 
 /*
  *===== BEGIN ======
@@ -21,7 +22,9 @@
  */
 static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 {
-	return skb->head + skb->network_header;
+	/* Removing BPF untrusted pointer arithmetic for kernel < 6.17 */
+	// return skb->head + skb->network_header;
+	return (unsigned char *) (BPF_CORE_READ(skb, head) + BPF_CORE_READ(skb, network_header));
 }
 
 static inline struct iphdr *ip_hdr(const struct sk_buff *skb)
@@ -40,8 +43,10 @@ static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
 
 static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
 {
+	/* Removing BPF untrusted pointer arithmetic for kernel < 6.17 */
 	// NMS DEBUG_NET_WARN_ON_ONCE(!skb_transport_header_was_set(skb));
-	return skb->head + skb->transport_header;
+	// return skb->head + skb->transport_header;
+	return (unsigned char *) (BPF_CORE_READ(skb, head) + BPF_CORE_READ(skb, transport_header));
 }
 
 static inline struct tcphdr *tcp_hdr(const struct sk_buff *skb)
@@ -136,10 +141,13 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 		return 0;
 	}
 
-	saddr = bpf_ntohl(iph->saddr);
-	daddr = bpf_ntohl(iph->daddr);
+	// saddr = bpf_ntohl(iph->saddr);
+	saddr = bpf_ntohl(BPF_CORE_READ(iph, saddr));
+	// daddr = bpf_ntohl(iph->daddr);
+	daddr = bpf_ntohl(BPF_CORE_READ(iph, daddr));
 
-	switch(iph->protocol) {
+	// switch(iph->protocol) {
+	switch(BPF_CORE_READ(iph, protocol)) {
 		case IPPROTO_TCP:
 		       	tcph = tcp_hdr(skb);
 
@@ -149,8 +157,10 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 			}
 
 			proto = 0x000000ff & IPPROTO_TCP;
-			src = bpf_ntohs(tcph->source);
-			dst = bpf_ntohs(tcph->dest);
+			// src = bpf_ntohs(tcph->source);
+			src = bpf_ntohs(BPF_CORE_READ(tcph, source));
+			// dst = bpf_ntohs(tcph->dest);
+			dst = bpf_ntohs(BPF_CORE_READ(tcph, dest));
 
 			break;
 		case IPPROTO_UDP:
@@ -162,8 +172,10 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 			}
 
 			proto = 0x000000ff & IPPROTO_UDP;
-			src = bpf_ntohs(udph->source);
-			dst = bpf_ntohs(udph->dest);
+			// src = bpf_ntohs(tcph->source);
+			src = bpf_ntohs(BPF_CORE_READ(tcph, source));
+			// dst = bpf_ntohs(tcph->dest);
+			dst = bpf_ntohs(BPF_CORE_READ(tcph, dest));
 
 			break;
 		case IPPROTO_ICMP:
@@ -174,11 +186,10 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 				return 0;
 			}
 
-			if ((icmph->type == ICMP_ECHO) || (icmph->type == ICMP_ECHOREPLY)) {
-				proto = 0x000000ff & IPPROTO_ICMP;
-				src = 0;
-				dst = 0;
-			}
+			// if ((icmph->type == ICMP_ECHO) || (icmph->type == ICMP_ECHOREPLY)) {
+			proto = 0x000000ff & IPPROTO_ICMP;
+			src = 0;
+			dst = 0;
 
 			break;
 		default:
