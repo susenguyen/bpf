@@ -26,8 +26,8 @@ ipt_do_table(filter/hook_num) - devin=(null)/0, devout=eth0/2, saddr=0xa010002, 
 ```
 
 - hoook_num: hook number as defined in the enum nf_inet_hooks in uapi/linux/netfilter.h
-- devin: ingress device
-- devout: egress device
+- devin/index: ingress device (INPUT and FORWARD hooks); non null if the hook drops the packet on this device
+- devout/index: egress device (OUTPUT and FORWARD hooks); non null if the hook drops the packet on this device
 - saddr: source IP address in little-endian (hex)
 - daddr: destination IP address in little-endian (hex)
 - proto: "tcp" or "udp"

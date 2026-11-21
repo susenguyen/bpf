@@ -13,9 +13,6 @@
 
 #define NF_ACCEPT 1		/* From uapi/linux/netfilter.h		*/
 
-#define ICMP_ECHOREPLY	0	/* From uapi/linux/icmp.h		*/
-#define ICMP_ECHO	8
-
 /*
  * ip_hdr()
  *
@@ -210,8 +207,10 @@ int BPF_PROG(ipt_do_table_exit, void *priv, struct sk_buff *skb, const struct nf
 	}
 
 	bpf_printk("ipt_do_table_exit()(%s/%d) - devin=%s/%d, devout=%s/%d, saddr=0x%x, daddr=0x%x, proto=%s, "
-		"spt=0x%x, dpt=0x%x, verdict=0x%x\n", table->name, state->hook, devin,
-					devidxin, devout, devidxout, saddr, daddr,
+		"spt=0x%x, dpt=0x%x, verdict=0x%x\n", table->name, state->hook,
+					devin == NULL ? "(null)" : devin, devidxin,
+					devout == NULL ? "(null)" : devout, devidxout,
+					saddr, daddr,
 					proto == IPPROTO_TCP ? "tcp" : (proto == IPPROTO_UDP ? "udp" : "icmp"),
 					src, dst, verdict);
 
